@@ -1,0 +1,20 @@
+import matplotlib.pyplot as plt
+
+# Valores T^2 calculados
+T2_values = [1.428, 3.351, 4.670, 2.684, 0.357, 23.018, 9.912, 0.774, 6.228, 10.768]
+
+# Límite Superior de Control (UCL)
+UCL = 38.37
+
+# Crear la gráfica
+plt.figure(figsize=(10, 6))
+plt.plot(range(1, 11), T2_values, marker='o', linestyle='-', color='b', label='T^2 values')
+plt.axhline(y=UCL, color='r', linestyle='--', label='UCL = 38.37')
+
+# Etiquetas y título
+plt.xlabel('Subgrupo')
+plt.ylabel('T^2')
+plt.title('Carta de Control Multivariado')
+plt.legend()
+plt.grid(True)
+plt.show()

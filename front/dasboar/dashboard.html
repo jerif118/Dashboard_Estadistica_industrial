@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dasboar/style.css') }}">
+    <title>Dashboard</title>
+</head>
+<body>
+    <nav>
+        <h2>Menú</h2>
+        <ul>
+            <li><a href="#cameron" onclick="showPanel('cameron')">Plan de Muestreo (Cameron)</a></li>
+            <li><a href="#mil_std_414" onclick="showPanel('mil_std_414')">Plan de Muestreo (MIL STD 414)</a></li>
+            <li><a href="#six_sigma" onclick="showPanel('six_sigma')">Six Sigma</a></li>
+            <li><a href="#multivariate_control" onclick="showPanel('multivariate_control')">Control Multivariado</a></li>
+            <li><a href="#taguchi" onclick="showPanel('taguchi')">Filosofía de Taguchi</a></li>
+            <li><a href="#sample_size" onclick="showPanel('sample_size')">Determinación del Tamaño de Muestra</a></li>
+            <li><a href="#control_p" onclick="showPanel('control_p')">Carta de Control p</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="cabecera">Dashboard de Análisis</div>
+        <div class="content">
+            <div class="dashboard">
+                <!-- Panel para Plan de Muestreo (Cameron) -->
+                <div class="panel" id="cameron-panel">
+                    <div class="title">Plan de Muestreo (Cameron)</div>
+                    <form id="cameron-form">
+                        <label for="aql">NCA (Nivel de Calidad Aceptable %):</label>
+                        <input type="text" id="aql" name="aql">
+                        <label for="ncl">NCL (Nivel de Calidad de Lotes %):</label>
+                        <input type="text" id="ncl" name="ncl">
+                        <label for="confianza">Nivel de Confianza (1-α):</label>
+                        <input type="text" id="confianza" name="confianza">
+                        <label for="beta">Nivel de Riesgo del Consumidor (β):</label>
+                        <input type="text" id="beta" name="beta">
+                        <button type="button" onclick="submitForm('cameron')">Calcular</button>
+                    </form>
+                </div>
+                <!-- Panel para Plan de Muestreo (MIL STD 414) -->
+                <div class="panel" id="mil_std_414-panel">
+                    <div class="title">Plan de Muestreo (MIL STD 414)</div>
+                    <form id="mil_std_414-form">
+                        <label for="lote_size">Tamaño del Lote (N):</label>
+                        <input type="text" id="lote_size" name="lote_size">
+                        <label for="desviaciones">Desviaciones Estándar Permitidas (k):</label>
+                        <input type="text" id="desviaciones" name="desviaciones">
+                        <label for="desviacion_estandar">Desviación Estándar de la Muestra (σ):</label>
+                        <input type="text" id="desviacion_estandar" name="desviacion_estandar">
+                        <button type="button" onclick="submitForm('mil_std_414')">Calcular</button>
+                    </form>
+                </div>
+                    <!-- Panel para Six Sigma -->
+                <div class="panel" id="six_sigma-panel">
+                    <div class="title">Six Sigma</div>
+                    <form id="six_sigma_form">
+                        <div class="form-group">
+                            <label for="data_six_sigma">Datos (separados por comas):</label>
+                            <textarea class="form-control" id="data_six_sigma" name="data_six_sigma" rows="3" placeholder="0.244, 0.251, 0.25, 0.247, 0.255, ..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="analysis_type_six_sigma">Tipo de Análisis:</label>
+                            <select class="form-control" id="analysis_type_six_sigma" name="analysis_type_six_sigma">
+                                <option value="control_chart">Gráfico de Control</option>
+                                <option value="sigma_level">Nivel Sigma</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitForm('six_sigma')">Calcular</button>
+                    </form>
+                    <div id="six_sigma_results" style="display: none;">
+                        <h5>Resultados</h5>
+                        <p id="sigma_level_result" style="display: none;"></p>
+                        <img id="six_sigma_chart" src="" alt="Six Sigma Chart" style="display: none;">
+                    </div>
+                </div>
+                <!-- Panel para Cartas de Control Multivariado (Hotelling T²) -->
+                <div class="panel" id="multivariate_control-panel">
+                    <div class="title">Control Multivariado (Hotelling T²)</div>
+                    <form id="multivariate_control-form">
+                        <label for="data_multivariate">Datos (separados por comas y punto y coma entre observaciones, ej. "1,2,3;4,5,6"):</label>
+                        <textarea id="data_multivariate" name="data_multivariate"></textarea>
+                        <button type="button" onclick="submitForm('multivariate_control')">Calcular</button>
+                    </form>
+                </div>
+                <!-- Panel para Filosofía de Taguchi -->
+                <div class="panel" id="taguchi-panel">
+                    <div class="title">Filosofía de Taguchi</div>
+                    <form id="taguchi-form">
+                        <label for="factores">Factores (separados por comas):</label>
+                        <input type="text" id="factores" name="factores">
+                        <div id="niveles-container">
+                            <label for="niveles">Niveles (separados por comas para cada factor):</label>
+                            <textarea id="niveles" name="niveles[0]"></textarea>
+                        </div>
+                        <button type="button" onclick="addNivel()">Añadir Nivel</button>
+                        <button type="button" onclick="submitForm('taguchi')">Calcular</button>
+                    </form>
+                </div>
+                <!-- Panel para Determinación del Tamaño de Muestra -->
+                <div class="panel" id="sample_size-panel">
+                    <div class="title">Determinación del Tamaño de Muestra</div>
+                    <div>
+                        <button type="button" class="case-button" onclick="toggleCase('proporcion_infinita')">Proporción Infinita</button>
+                        <button type="button" class="case-button" onclick="toggleCase('proporcion_finita')">Proporción Finita</button>
+                        <button type="button" class="case-button" onclick="toggleCase('promedios_infinita')">Promedios Infinita</button>
+                        <button type="button" class="case-button" onclick="toggleCase('promedios_finita')">Promedios Finita</button>
+                    </div>
+                    <form id="sample_size-form">
+                        <input type="hidden" id="cases" name="cases">
+                        <label for="Z">Z:</label>
+                        <input type="text" id="Z" name="Z">
+                        <label for="E">E (Error de muestreo):</label>
+                        <input type="text" id="E" name="E">
+                        <label for="N">N (Tamaño de la población):</label>
+                        <input type="text" id="N" name="N">
+                        <label for="p">p (Proporción esperada):</label>
+                        <input type="text" id="p" name="p">
+                        <label for="q">q (Proporción complementaria):</label>
+                        <input type="text" id="q" name="q">
+                        <label for="porcentaje">Porcentaje:</label>
+                        <input type="text" id="porcentaje" name="porcentaje">
+                        <label for="sigma">σ (Desviación estándar):</label>
+                        <input type="text" id="sigma" name="sigma">
+                        <button type="button" onclick="submitForm('sample_size')">Calcular</button>
+                    </form>
+                </div>
+                 <!-- Panel para Carta de Control p -->
+                 <div class="panel" id="control_p-panel">
+                    <div class="title">Carta de Control p</div>
+                    <form id="control_p-form">
+                        <label for="data_p">Datos (formato tabla):</label>
+                        <table id="data_p" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Número de subgrupo</th>
+                                    <th>Número inspeccionado (n)</th>
+                                    <th>Número de No-conformidades (d)</th>
+                                    <th>Proporción de No-conformidades (p)</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="text" name="subgrupo_1" value="1"></td>
+                                    <td><input type="text" name="inspeccionado_1" value="920"></td>
+                                    <td><input type="text" name="no_conformidades_1" value="13"></td>
+                                    <td><input type="text" name="proporcion_1" value="0.014"></td>
+                                    <td><button type="button" onclick="removeRow(this)">Eliminar</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <button type="button" onclick="addRow()">Agregar Fila</button>
+                        <button type="button" onclick="submitForm('control_p')">Calcular</button>
+                    </form>
+                </div>
+            </div>
+            <div class="results-section">
+                <h2>Resultados</h2>
+                <div class="results" id="results"></div>
+                <h2>Gráficas</h2>
+                <div class="charts" id="charts"></div>
+            </div>
+        </div>
+    </main>
+    <script src="{{ url_for('static', filename='dasboar/script.js') }}"></script>
+    <script>
+        let nivelCount = 1;
+
+        function showPanel(panelId) {
+            document.querySelectorAll('.panel').forEach(panel => {
+                panel.style.display = 'none';
+            });
+            document.getElementById(panelId + '-panel').style.display = 'block';
+        }
+
+        function addNivel() {
+            const nivelesContainer = document.getElementById('niveles-container');
+            const newNivel = document.createElement('textarea');
+            newNivel.setAttribute('id', `niveles[${nivelCount}]`);
+            newNivel.setAttribute('name', `niveles[${nivelCount}]`);
+            newNivel.setAttribute('placeholder', 'Niveles (separados por comas)');
+            nivelesContainer.appendChild(newNivel);
+            nivelCount++;
+        }
+
+        function addRow() {
+            const table = document.getElementById('data_p').getElementsByTagName('tbody')[0];
+            const rowCount = table.rows.length;
+            const newRow = table.insertRow(rowCount);
+
+            const cell1 = newRow.insertCell(0);
+            const cell2 = newRow.insertCell(1);
+            const cell3 = newRow.insertCell(2);
+            const cell4 = newRow.insertCell(3);
+            const cell5 = newRow.insertCell(4);
+
+            cell1.innerHTML = `<input type="text" name="subgrupo_${rowCount + 1}" value="${rowCount + 1}">`;
+            cell2.innerHTML = `<input type="text" name="inspeccionado_${rowCount + 1}" value="">`;
+            cell3.innerHTML = `<input type="text" name="no_conformidades_${rowCount + 1}" value="">`;
+            cell4.innerHTML = `<input type="text" name="proporcion_${rowCount + 1}" value="">`;
+            cell5.innerHTML = `<button type="button" onclick="removeRow(this)">Eliminar</button>`;
+        }
+
+        function removeRow(button) {
+            const row = button.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+        }
+
+        function toggleCase(caseName) {
+            const buttons = document.querySelectorAll('.case-button');
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+
+            const button = document.querySelector(`button[onclick="toggleCase('${caseName}')"]`);
+            button.classList.add('active');
+
+            const casesInput = document.getElementById('cases');
+            casesInput.value = caseName;
+        }
+
+        function submitForm(section) {
+            const form = document.getElementById(`${section}-form`);
+            const formData = new FormData(form);
+            const results = document.getElementById('results');
+            const charts = document.getElementById('charts');
+            
+            fetch(`/${section}`, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    results.innerText = `Error: ${data.error}`;
+                } else {
+                    if (section === 'taguchi') {
+                        results.innerText = `Media del Rendimiento: ${data.mean_performance.join(', ')}, Variabilidad: ${data.variability.join(', ')}`;
+                    } else if (section === 'multivariate_control') {
+                        results.innerText = `Valores T²: ${data.t2_values.join(', ')}, Límite de Control: ${data.UCL}`;
+                    } else if (section === 'mil_std_414') {
+                        results.innerText = `Tamaño de Muestra: ${data.n}`;
+                    } else if (section === 'cameron') {
+                        results.innerText = `Tamaño de Muestra: ${data.n}`;
+                    } else if (section === 'six_sigma') {
+                        results.innerText = `Media: ${data.mean}, Desviación Estándar: ${data.std_dev}, UCL: ${data.UCL}, LCL: ${data.LCL}`;
+                    } else if (section === 'sample_size') {
+                        results.innerText = `Casos: ${data.casos.join(', ')}, Valores: ${data.valores.join(', ')}`;
+                    } else if (section === 'control_p') {
+                        results.innerText = `Valores p: ${data.p.join(', ')}, UCL: ${data.UCL}, LCL: ${data.LCL}`;
+                    } else {
+                        results.innerText = `Resultado: ${data.result}`;
+                    }
+                    charts.innerHTML = `<img src="data:image/png;base64,${data.chart}" alt="Gráfica">`;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        showPanel('cameron');
+    </script>
+</body>
+</html>

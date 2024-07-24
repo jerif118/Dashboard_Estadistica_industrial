@@ -1,0 +1,68 @@
+body{
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+
+}
+.login{
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border-radius: 25px;
+    top: 10%;
+    left: 20%;
+    height: 81%;
+    width: 23vw;
+    aspect-ratio: 3/4;
+    box-sizing: border-box;
+    background-color: rgb(255, 255, 255,0.9);
+    z-index: 1;
+}
+.logo1{
+    width: 60%;
+    margin-left: 80px;
+}
+.form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centra los elementos verticalmente dentro del form */
+}
+.titulo{
+    width: 100%;
+    height: 35%;
+    /*background-color: blueviolet;*/
+}
+.name,.password{
+    border-radius: 15px;
+    border: none;
+    outline: none;
+    margin: 7px;
+    margin-left: 5vh;
+    margin-right: 5vh;
+    height: 40px;
+    box-shadow: 0 0 2px rgb(210, 210, 210);
+}
+button{
+    margin-left: 10vh;
+    margin-right: 10vh;
+    margin: 25px;
+    border: none;
+    border-radius: 50px;
+    height: 40px;
+    background-color: rgb(207, 235, 253);
+}
+p{
+    display: block;
+    margin-left: 100px;
+}
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1; /* Pone el video detrás del contenido */
+}
